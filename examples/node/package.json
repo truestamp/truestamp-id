@@ -1,0 +1,11 @@
+{
+  "name": "truestamp-id-example",
+  "version": "1.0.0",
+  "description": "Example Truestamp ID JS project",
+  "main": "index.js",
+  "scripts": {
+    "example": "node index.js"
+  },
+  "author": "Truestamp <support@truestamp.com>",
+  "dependencies": {}
+}

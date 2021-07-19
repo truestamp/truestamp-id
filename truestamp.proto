@@ -1,0 +1,50 @@
+syntax = "proto3";
+package truestamp;
+
+// A Id is an Blake3 Keyed Hash (HMAC) signed identifier with
+// metadata. It will be encoded as a Base32 (Crockford) string.
+// It is returned when a hash is submitted to the Truestamp service.
+// It is the primary identifier for a hash and can be used to retrieve
+// commitments from the Truestamp service.
+message Id {
+  // Cloud provider region
+  enum Region {
+    REGION_UNSPECIFIED = 0;
+    REGION_US_EAST_1 = 1;
+  }
+
+  // Application environment
+  enum Environment {
+    ENVIRONMENT_UNSPECIFIED = 0;
+    ENVIRONMENT_PRODUCTION = 1;
+    ENVIRONMENT_STAGING = 2;
+    ENVIRONMENT_DEVELOPMENT = 3;
+  }
+
+  // UNIX time in seconds since epoch
+  int64 timestamp = 1;
+
+  Region region = 2;
+
+  Environment environment = 3;
+
+  // Short Hash : A truncated version of the hash submitted by the user.
+  // The first 8 bytes of the hash are stored to ease correlation of this ID
+  // with a local document hash. An 8 byte truncated hash has a 0.001
+  // probability of collision in a pool of 1.9×10^8 (190,000,000) hashes. The
+  // probability of collision is good enough to use as an identifier. See :
+  // https://stackoverflow.com/questions/18134627/how-much-of-a-git-sha-is-generally-considered-necessary-to-uniquely-identify-a
+  // See : https://en.wikipedia.org/wiki/Birthday_problem#Probability_table
+  bytes short_hash_bytes = 4;
+
+  // The MultiHash type code in VarInt format.
+  // See : https://multiformats.io/multihash/
+  // See : https://github.com/multiformats/js-multihash
+  int32 hash_code = 5;
+
+  // QLDB Base62 encoded 128-bit UUID number, with a length of 22 characters
+  string qldb_id = 6;
+
+  // QLDB document version number
+  int32 qldb_version = 7;
+}
