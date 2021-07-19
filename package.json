@@ -1,6 +1,6 @@
 {
   "name": "@truestamp/truestamp-id",
-  "amdName": "Truestamp",
+  "amdName": "TruestampId",
   "version": "0.0.1",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "description": "An ID serialize/deserialize utility written in Typescript that supports ES Modules, UMD, and CommonJS loaders and runs in Deno, Node.js, and modern browsers",
@@ -14,47 +14,23 @@
   "homepage": "https://github.com/truestamp/truestamp-id",
   "source": "src/index.ts",
   "main": "dist/truestamp-id.js",
-  "module": "dist/truestamp-id.module.js",
-  "esmodule": "dist/truestamp-id.modern.js",
-  "umd:main": "dist/truestamp-id.umd.js",
-  "unpkg": "dist/truestamp-id.umd.js",
-  "jsdelivr": "dist/truestamp-id.umd.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "require": "./dist/truestamp-id.js",
-      "import": "./dist/truestamp-id.module.js",
-      "node": "./dist/truestamp-id.js",
-      "default": "./dist/truestamp-id.module.js"
-    }
-  },
-  "mangle": {
-    "regex": "^_"
-  },
+  "types": "dist/truestamp-id.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "package-check": "npx package-check",
-    "build-web": "microbundle --target=web --tsconfig tsconfig.json --format es,umd,modern",
     "build-node": "microbundle --target=node --tsconfig tsconfig.json --format cjs",
-    "build": "npm run package-check && npm run clean && npm run build-web && npm run build-node && npm run test",
+    "build": "npm run clean && npm run build-node && npm run test",
     "dev": "microbundle watch --tsconfig tsconfig.json",
-    "test": "jest --config jest.config.ts --detectOpenHandles",
-    "serve": "npx serve --cors"
+    "test": "jest --config jest.config.ts --detectOpenHandles"
   },
   "keywords": [
     "Truestamp",
     "javascript",
     "typescript",
     "client",
-    "universal",
-    "ES Modules",
-    "UMD",
     "CommonJS",
-    "Deno",
-    "Node.js",
-    "Browser"
+    "Node.js"
   ],
-  "license": "MIT",
   "files": [
     "dist"
   ],
@@ -69,7 +45,6 @@
   },
   "devDependencies": {
     "@ctrl/ts-base32": "^2.0.1",
-    "@skypack/package-check": "^0.2.2",
     "@types/jest": "^26.0.24",
     "@types/long": "^4.0.1",
     "@types/node": "^16.3.3",

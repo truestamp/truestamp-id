@@ -53,7 +53,7 @@ export interface IdData extends IdDataBase {
   hashName: string
 }
 
-const HMAC_LENGTH = 32 // bytes
+const HMAC_LENGTH = 16 // bytes
 const HMAC_KEY = hexToArray("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
 
 // Generated from truestamp.proto file with `npx pbjs truestamp.proto`.
@@ -270,7 +270,7 @@ const transformMessageIntoIdData = async (msg: Message<{}>): Promise<IdData> => 
   return newId
 }
 
-// Verify message MAC
+// Verify HMAC-SHA256, truncated to HMAC_LENGTH, over the compressed message
 const verifyMac = (id: string) => {
   const compressedBuffer = base32Decode(id.toUpperCase(), "Crockford")
 
@@ -283,9 +283,9 @@ const verifyMac = (id: string) => {
   const newMac = hmac(
     HMAC_KEY,
     new Uint8Array(compressedBufferWithoutMac)
-  )
+  ).slice(0, HMAC_LENGTH)
 
-  // Constant time comparison of the stored and new MACs
+  // Do a constant time comparison of the embedded and new HMAC
   if (!verify(new Uint8Array(mac), newMac)) {
     throw new Error("Invalid ID [3]")
   }
@@ -314,7 +314,7 @@ export const encodeId = async (data: IdData, prefix: boolean = true) => {
   const mac = hmac(HMAC_KEY, compressedProtoMessage)
 
   const base32Id = base32Encode(
-    concatArrays(mac, compressedProtoMessage),
+    concatArrays(mac.slice(0, HMAC_LENGTH), compressedProtoMessage),
     "Crockford"
   )
 
