@@ -54,7 +54,10 @@ export interface IdData extends IdDataBase {
 }
 
 const HMAC_LENGTH = 16 // bytes
-const HMAC_KEY = hexToArray("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
+
+// For SHA256 the key length should be the internal block size of 64 bytes.
+// See : https://pthree.org/2016/07/29/breaking-hmac/
+const HMAC_KEY_LENGTH = 64 // bytes
 
 // Generated from truestamp.proto file with `npx pbjs truestamp.proto`.
 // DO NOT modify this manually. Modify the .proto file instead and regenerate.
@@ -271,7 +274,7 @@ const transformMessageIntoIdData = async (msg: Message<{}>): Promise<IdData> => 
 }
 
 // Verify HMAC-SHA256, truncated to HMAC_LENGTH, over the compressed message
-const verifyMac = (id: string) => {
+const verifyMac = (id: string, key: Uint8Array) => {
   const compressedBuffer = base32Decode(id.toUpperCase(), "Crockford")
 
   const mac = compressedBuffer.slice(0, HMAC_LENGTH)
@@ -281,13 +284,13 @@ const verifyMac = (id: string) => {
 
   // Generate a new HMAC for the payload
   const newMac = hmac(
-    HMAC_KEY,
+    key,
     new Uint8Array(compressedBufferWithoutMac)
   ).slice(0, HMAC_LENGTH)
 
   // Do a constant time comparison of the embedded and new HMAC
   if (!verify(new Uint8Array(mac), newMac)) {
-    throw new Error("Invalid ID [3]")
+    throw new Error("Invalid ID [mac]")
   }
 
   return true
@@ -296,10 +299,14 @@ const verifyMac = (id: string) => {
 /**
  * Encode an IdData object into an optionally prefixed Base32 (Crockford) encoded string.
  * @param {IdData} data - An IdData object.
+ * @param {Uint8Array} key - A 64 byte Uint8Array HMAC-SHA256 key.
  * @param {boolean} prefix - A boolean to indicate whether to return a prefixed ID.
  * @return {Promise<string>} A Promise that resolves to a Base32 (Crockford) encoded string, optionally prefixed with `truestamp`.
  */
-export const encodeId = async (data: IdData, prefix: boolean = true) => {
+export const encodeId = async (data: IdData, key: Uint8Array, prefix: boolean = true) => {
+  if (!key) throw new Error("Missing key")
+  if (key.length !== HMAC_KEY_LENGTH) throw new Error("Invalid key length")
+
   isValidIdData(data)
 
   const root = Root.fromJSON(protoJSON)
@@ -311,14 +318,14 @@ export const encodeId = async (data: IdData, prefix: boolean = true) => {
   const encodedProtoMessage = ProtoId.encode(protoMessage).finish()
   const compressedProtoMessage = zlibSync(encodedProtoMessage, { level: 9 })
 
-  const mac = hmac(HMAC_KEY, compressedProtoMessage)
+  const mac = hmac(key, compressedProtoMessage)
 
   const base32Id = base32Encode(
     concatArrays(mac.slice(0, HMAC_LENGTH), compressedProtoMessage),
     "Crockford"
   )
 
-  verifyMac(base32Id)
+  verifyMac(base32Id, key)
 
   if (prefix) {
     return BASE32_PREFIX + base32Id
@@ -330,14 +337,18 @@ export const encodeId = async (data: IdData, prefix: boolean = true) => {
 /**
  * Decode an ID into an IdData object
  * @param {string}  id - A Base32 (Crockford) encoded string, optionally prefixed with `truestamp`.
+ * @param {Uint8Array} key - A 64 byte Uint8Array HMAC-SHA256 key.
  * @return {Promise<IdData>} A Promise that resolves to the decoded IdData.
  */
-export const decodeId = async (id: string): Promise<IdData> => {
+export const decodeId = async (id: string, key: Uint8Array): Promise<IdData> => {
+  if (!key) throw new Error("Missing key")
+  if (key.length !== HMAC_KEY_LENGTH) throw new Error("Invalid key length")
+
   // Remove the BASE32_PREFIX if present
   const base32Id = id.replace(BASE32_PREFIX, "")
 
   // Verify the MAC before decoding
-  verifyMac(base32Id)
+  verifyMac(base32Id, key)
 
   const root = Root.fromJSON(protoJSON)
   const ProtoId = root.lookupType("truestamp.Id")
