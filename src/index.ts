@@ -1,11 +1,4 @@
-// https://thecodebarbarian.com/working-with-protobufs-in-node-js.html
-// https://en.wikipedia.org/wiki/Binary-to-text_encoding#Base58
-// https://protobufjs.github.io/protobuf.js/
-// https://github.com/dcodeIO/long.js
-// https://github.com/LinusU/base32-encode
-// https://github.com/LinusU/base32-decode
-// Typescript Port : https://github.com/scttcper/ts-base32
-// https://www.crockford.com/base32.html
+// Copyright 2021 Truestamp Inc. All Rights Reserved.
 
 // ID Composition
 // [base32prefix][base32String]

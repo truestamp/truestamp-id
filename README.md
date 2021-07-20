@@ -2,16 +2,20 @@
 
 ## Description
 
-A Node.js utility library, written in Typescript, and outputting CommonJS, for serializing/deserializing Truestamp ID's.
+An ID serialize/deserialize utility written in Typescript that supports Node.js.
 
-### Example Code
+## ID Structure
 
-There are working code examples for Node.js in the [/examples](/examples) directory.
+[LucidChart Doc](https://lucid.app/lucidchart/21ef4544-fa8e-4135-9657-40723a4bb293/edit?beaconFlowId=C1212F7C3FA80B71&page=0_0#)
 
-## Contributing
+![Truestamp ID Structure](docs/truestamp-id-structure.png "Truestamp ID Structure")
 
-We'd love you to join our network of contributors. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for help getting started.
+## Example Code
 
-## Code of Conduct
+There is a working code example for Node.js in the [/examples](/examples) directory.
 
-We expect all members of the community to respect our [Code of Conduct](CODE_OF_CONDUCT.md) at all times.
+## Legal
+
+```txt
+Copyright 2021 Truestamp Inc. All Rights Reserved.
+```
