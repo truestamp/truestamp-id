@@ -23,4 +23,4 @@ There is a working code example for Node.js in the [/examples](/examples) direct
 
 ## Legal
 
-Copyright 2021 Truestamp Inc. All Rights Reserved.
+Copyright © 2021 Truestamp Inc. All Rights Reserved.

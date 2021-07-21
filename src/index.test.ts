@@ -1,4 +1,4 @@
-// Copyright 2021 Truestamp Inc. All Rights Reserved.
+// Copyright © 2021 Truestamp Inc. All Rights Reserved.
 
 const ts = require("../dist/truestamp-id.js")
 
