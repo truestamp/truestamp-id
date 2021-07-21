@@ -22,11 +22,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-modules-${{ hashFiles('package.json', 'package-lock.json') }}
       - name: CI Install
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
+      - name: Cache dist
+        id: cache-dist
+        uses: actions/cache@v2
+        with:
+          path: dist
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-dist-${{ hashFiles('dist/index.d.ts', 'dist/truestamp-id.js', 'dist/truestamp-id.js.map') }}
       - name: Build
+        if: steps.cache-dist.outputs.cache-hit != 'true'
         run: npm run build --if-present
       - name: Test
         run: npm test
@@ -52,11 +59,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: 14.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+          key: 14.x-${{ runner.OS }}-modules-${{ hashFiles('package.json', 'package-lock.json') }}
       - name: CI Install
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
+      - name: Cache dist
+        id: cache-dist
+        uses: actions/cache@v2
+        with:
+          path: dist
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-dist-${{ hashFiles('dist/index.d.ts', 'dist/truestamp-id.js', 'dist/truestamp-id.js.map') }}
       - name: Build
+        if: steps.cache-dist.outputs.cache-hit != 'true'
         run: npm run build --if-present
       - name: Test
         run: npm test
