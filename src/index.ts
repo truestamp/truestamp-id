@@ -24,8 +24,8 @@ const BASE32_PREFIX = "truestamp"
 
 interface IdDataBase {
   timestamp: number
-  qldbId: string
-  qldbVersion: number
+  id: string
+  version: number
 }
 
 // The interface that is used by Protocol Buffers.
@@ -81,11 +81,11 @@ const protoJSON = {
               "type": "int32",
               "id": 5
             },
-            "qldbId": {
+            "id": {
               "type": "string",
               "id": 6
             },
-            "qldbVersion": {
+            "version": {
               "type": "int32",
               "id": 7
             }
@@ -138,13 +138,13 @@ const schema: JSONSchemaType<IdData> = {
       pattern: "^[a-zA-Z0-9-]+$",
       nullable: true,
     },
-    qldbId: {
+    id: {
       type: "string",
       minLength: 22,
       maxLength: 22,
       pattern: "^[a-zA-Z0-9]+$",
     },
-    qldbVersion: { type: "integer", minimum: 0, maximum: 999999999 },
+    version: { type: "integer", minimum: 0, maximum: 999999999 },
   },
   required: [
     "timestamp",
@@ -152,8 +152,8 @@ const schema: JSONSchemaType<IdData> = {
     "environment",
     "shortHash",
     "hashName",
-    "qldbId",
-    "qldbVersion",
+    "id",
+    "version",
   ],
   additionalProperties: false,
 }
@@ -203,8 +203,8 @@ const transformIdDataIntoMessage = async (data: IdData): Promise<Message<{}>> =>
     environment: environment,
     shortHashBytes: hexToArray(data.shortHash),
     hashCode: coerceCode(data.hashName as HashName),
-    qldbId: data.qldbId,
-    qldbVersion: data.qldbVersion,
+    id: data.id,
+    version: data.version,
   }
 
   let message = Id.create(internalId);
@@ -259,8 +259,8 @@ const transformMessageIntoIdData = async (msg: Message<{}>): Promise<IdData> => 
     environment: environment,
     shortHash: arrayToHex(obj.shortHashBytes),
     hashName: codes[(obj.hashCode as HashCode)],
-    qldbId: obj.qldbId,
-    qldbVersion: obj.qldbVersion,
+    id: obj.id,
+    version: obj.version,
   }
 
   return newId

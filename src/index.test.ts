@@ -55,8 +55,8 @@ describe("Encoding and decoding", () => {
                 environment: environments[randEnvIndex],
                 shortHash: randomHex(16),
                 hashName: hashTypes[randHashTypeIndex],
-                qldbId: randomBase62(22),
-                qldbVersion: randVersion,
+                id: randomBase62(22),
+                version: randVersion,
             }
 
             let id = await ts.encodeId(idData, key, true)
@@ -79,8 +79,8 @@ describe("Test vector", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         let decodedIdData = await ts.decodeId(id, key)
@@ -110,8 +110,8 @@ describe("Test prefix", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -131,8 +131,8 @@ describe("Test prefix", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // third parameter is true
@@ -152,8 +152,8 @@ describe("Test prefix", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // third parameter is false
@@ -177,8 +177,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -196,8 +196,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -215,8 +215,8 @@ describe("encodeId fails when given", () => {
             environment: 'foo',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -234,8 +234,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f2',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -253,8 +253,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f26499',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -272,8 +272,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-999',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -282,7 +282,7 @@ describe("encodeId fails when given", () => {
         }).rejects.toThrow("Unrecognized hash function");
     })
 
-    test("invalid qldbId - too short", async () => {
+    test("invalid id - too short", async () => {
         const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
 
         const idData = {
@@ -291,17 +291,17 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-256',
-            qldbId: 'epcseHP5bZfs07Ly29j72',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72',
+            version: 418
         }
 
         // no third parameter
         await expect(async () => {
             await ts.encodeId(idData, key)
-        }).rejects.toThrow("qldbId/minLength");
+        }).rejects.toThrow("id/minLength");
     })
 
-    test("invalid qldbId - too long", async () => {
+    test("invalid id - too long", async () => {
         const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
 
         const idData = {
@@ -310,17 +310,17 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-256',
-            qldbId: 'epcseHP5bZfs07Ly29j72kZ',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72kZ',
+            version: 418
         }
 
         // no third parameter
         await expect(async () => {
             await ts.encodeId(idData, key)
-        }).rejects.toThrow("qldbId/maxLength");
+        }).rejects.toThrow("id/maxLength");
     })
 
-    test("invalid qldbVersion - too high", async () => {
+    test("invalid version - too high", async () => {
         const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
 
         const idData = {
@@ -329,14 +329,14 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-256',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 999999999999999
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 999999999999999
         }
 
         // no third parameter
         await expect(async () => {
             await ts.encodeId(idData, key)
-        }).rejects.toThrow("qldbVersion/maximum");
+        }).rejects.toThrow("version/maximum");
     })
 
 
@@ -351,8 +351,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         await expect(async () => {
@@ -369,8 +369,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter
@@ -388,8 +388,8 @@ describe("encodeId fails when given", () => {
             environment: 'production',
             shortHash: '032080886bf3f264',
             hashName: 'sha3-512',
-            qldbId: 'epcseHP5bZfs07Ly29j72k',
-            qldbVersion: 418
+            id: 'epcseHP5bZfs07Ly29j72k',
+            version: 418
         }
 
         // no third parameter

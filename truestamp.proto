@@ -45,8 +45,8 @@ message Id {
   int32 hash_code = 5;
 
   // QLDB Base62 encoded 128-bit UUID number, with a length of 22 characters
-  string qldb_id = 6;
+  string id = 6;
 
   // QLDB document version number
-  int32 qldb_version = 7;
+  int32 version = 7;
 }

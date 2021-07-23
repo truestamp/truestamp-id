@@ -25,6 +25,7 @@ jobs:
           key: ${{ matrix.node-version }}-${{ runner.OS }}-modules-${{ hashFiles('package.json', 'package-lock.json') }}
       - name: CI Install
         if: steps.cache-modules.outputs.cache-hit != 'true'
+        # SECURITY : See : https://wildwolf.name/secure-way-run-npm-ci/
         run: npm ci --ignore-scripts
       - name: Cache dist
         id: cache-dist
@@ -40,6 +41,7 @@ jobs:
         run: npm test
         env:
           CI: true
+
   publish-gpr:
     needs: test
     runs-on: ubuntu-latest
@@ -63,6 +65,7 @@ jobs:
           key: 14.x-${{ runner.OS }}-modules-${{ hashFiles('package.json', 'package-lock.json') }}
       - name: CI Install
         if: steps.cache-modules.outputs.cache-hit != 'true'
+        # SECURITY : See : https://wildwolf.name/secure-way-run-npm-ci/
         run: npm ci --ignore-scripts
       - name: Cache dist
         id: cache-dist

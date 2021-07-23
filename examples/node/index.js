@@ -15,8 +15,8 @@ async function run() {
         environment: "staging",
         shortHash: "deadbeefdeadbeef",
         hashName: "sha2-256",
-        qldbId: "294jJ3YUoH1IEEm8GSabOs",
-        qldbVersion: 0,
+        id: "294jJ3YUoH1IEEm8GSabOs",
+        version: 0,
     }
 
     const id = await ts.encodeId(idData, key)
