@@ -13,8 +13,6 @@ async function run() {
         timestamp: Math.floor(new Date().getTime() / 1000),
         region: "us-east-1",
         environment: "staging",
-        shortHash: "deadbeefdeadbeef",
-        hashName: "sha2-256",
         id: "294jJ3YUoH1IEEm8GSabOs",
         version: 0,
     }

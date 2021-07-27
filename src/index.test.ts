@@ -53,8 +53,6 @@ describe("Encoding and decoding", () => {
                 timestamp: Math.floor(new Date().getTime() / 1000),
                 region: regions[randRegionIndex],
                 environment: environments[randEnvIndex],
-                shortHash: randomHex(16),
-                hashName: hashTypes[randHashTypeIndex],
                 id: randomBase62(22),
                 version: randVersion,
             }
@@ -71,16 +69,14 @@ describe("Encoding and decoding", () => {
 describe("Test vector", () => {
     test("decodes to the expected value", async () => {
         const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
-        const id = "truestamp8V382DKSDZJ7093ARFAPQ6NEWXWDNRTRVXYB77ADG18R4MC9GDCT3893ZFSTE50D24HV3N42WKH593R0TEJAHD320DSSYJH3SCP778VCHD2WR043YR7QR"
+        const id = "truestampKZKEECDT6D17Y5DDJ5WAJ963XSWDNRYRVVVTZ7ADG18R4JA9SK4D496BSCW34D6ZRF8D7N9NTZ13TE1HS6ZNH0R102ZYA2GQ"
 
         const expected = {
-            timestamp: 1626751407,
+            timestamp: 1627359031,
             region: 'us-east-1',
-            environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
-            id: 'epcseHP5bZfs07Ly29j72k',
-            version: 418
+            environment: 'staging',
+            id: '294jJ3YUoH1IEEm8GSabOs',
+            version: 0
         }
 
         let decodedIdData = await ts.decodeId(id, key)
@@ -91,7 +87,7 @@ describe("Test vector", () => {
     test("decode fails if invalid key provided", async () => {
         // first byte of key is wrong
         let key = fromHexString("ffadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
-        let id = "truestamp8V382DKSDZJ7093ARFAPQ6NEWXWDNRTRVXYB77ADG18R4MC9GDCT3893ZFSTE50D24HV3N42WKH593R0TEJAHD320DSSYJH3SCP778VCHD2WR043YR7QR"
+        let id = "truestampKZKEECDT6D17Y5DDJ5WAJ963XSWDNRYRVVVTZ7ADG18R4JA9SK4D496BSCW34D6ZRF8D7N9NTZ13TE1HS6ZNH0R102ZYA2GQ"
 
         await expect(async () => {
             await ts.decodeId(id, key)
@@ -108,8 +104,6 @@ describe("Test prefix", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -129,8 +123,6 @@ describe("Test prefix", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -150,8 +142,6 @@ describe("Test prefix", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -175,8 +165,6 @@ describe("encodeId fails when given", () => {
             timestamp: 4000000000,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -194,8 +182,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-nowhere-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -213,8 +199,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'foo',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -225,62 +209,6 @@ describe("encodeId fails when given", () => {
         }).rejects.toThrow("environment");
     })
 
-    test("invalid shortHash - too short", async () => {
-        const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
-
-        const idData = {
-            timestamp: 1626751407,
-            region: 'us-east-1',
-            environment: 'production',
-            shortHash: '032080886bf3f2',
-            hashName: 'sha3-512',
-            id: 'epcseHP5bZfs07Ly29j72k',
-            version: 418
-        }
-
-        // no third parameter
-        await expect(async () => {
-            await ts.encodeId(idData, key)
-        }).rejects.toThrow("shortHash/minLength");
-    })
-
-    test("invalid shortHash - too long", async () => {
-        const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
-
-        const idData = {
-            timestamp: 1626751407,
-            region: 'us-east-1',
-            environment: 'production',
-            shortHash: '032080886bf3f26499',
-            hashName: 'sha3-512',
-            id: 'epcseHP5bZfs07Ly29j72k',
-            version: 418
-        }
-
-        // no third parameter
-        await expect(async () => {
-            await ts.encodeId(idData, key)
-        }).rejects.toThrow("shortHash/maxLength");
-    })
-
-    test("invalid hashName", async () => {
-        const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
-
-        const idData = {
-            timestamp: 1626751407,
-            region: 'us-east-1',
-            environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-999',
-            id: 'epcseHP5bZfs07Ly29j72k',
-            version: 418
-        }
-
-        // no third parameter
-        await expect(async () => {
-            await ts.encodeId(idData, key)
-        }).rejects.toThrow("Unrecognized hash function");
-    })
 
     test("invalid id - too short", async () => {
         const key = fromHexString("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
@@ -289,8 +217,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-256',
             id: 'epcseHP5bZfs07Ly29j72',
             version: 418
         }
@@ -308,8 +234,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-256',
             id: 'epcseHP5bZfs07Ly29j72kZ',
             version: 418
         }
@@ -327,8 +251,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-256',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 999999999999999
         }
@@ -349,8 +271,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -367,8 +287,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }
@@ -386,8 +304,6 @@ describe("encodeId fails when given", () => {
             timestamp: 1626751407,
             region: 'us-east-1',
             environment: 'production',
-            shortHash: '032080886bf3f264',
-            hashName: 'sha3-512',
             id: 'epcseHP5bZfs07Ly29j72k',
             version: 418
         }

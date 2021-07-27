@@ -13,9 +13,8 @@ import { Message, Root } from "protobufjs"
 import { zlibSync, unzlibSync } from 'fflate'
 import { verify } from 'tweetnacl'
 import { hmac } from "fast-sha256"
-import { coerceCode, codes, HashCode, HashName } from "multihashes"
 import { base32Encode, base32Decode } from '@ctrl/ts-base32'
-import { hexToArray, arrayToHex, concatArrays } from 'enc-utils'
+import { concatArrays } from 'enc-utils'
 
 import Ajv, { JSONSchemaType } from "ajv"
 const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
@@ -33,8 +32,6 @@ interface IdDataBase {
 interface IdDataInternal extends IdDataBase {
   region: number
   environment: number
-  shortHashBytes: Uint8Array
-  hashCode: number
 }
 
 // The exported IdData interface represents the public
@@ -42,8 +39,6 @@ interface IdDataInternal extends IdDataBase {
 export interface IdData extends IdDataBase {
   region: string
   environment: string
-  shortHash: string
-  hashName: string
 }
 
 const HMAC_LENGTH = 16 // bytes
@@ -73,21 +68,13 @@ const protoJSON = {
               "type": "Environment",
               "id": 3
             },
-            "shortHashBytes": {
-              "type": "bytes",
-              "id": 4
-            },
-            "hashCode": {
-              "type": "int32",
-              "id": 5
-            },
             "id": {
               "type": "string",
-              "id": 6
+              "id": 4
             },
             "version": {
               "type": "int32",
-              "id": 7
+              "id": 5
             }
           },
           "nested": {
@@ -125,19 +112,6 @@ const schema: JSONSchemaType<IdData> = {
       type: "string",
       enum: ["development", "staging", "production"],
     },
-    shortHash: {
-      type: "string",
-      minLength: 16,
-      maxLength: 16,
-      pattern: "^[a-fA-F0-9]+$",
-    },
-    hashName: {
-      type: "string",
-      minLength: 3,
-      maxLength: 32,
-      pattern: "^[a-zA-Z0-9-]+$",
-      nullable: true,
-    },
     id: {
       type: "string",
       minLength: 22,
@@ -150,8 +124,6 @@ const schema: JSONSchemaType<IdData> = {
     "timestamp",
     "region",
     "environment",
-    "shortHash",
-    "hashName",
     "id",
     "version",
   ],
@@ -201,8 +173,6 @@ const transformIdDataIntoMessage = async (data: IdData): Promise<Message<{}>> =>
     timestamp: data.timestamp,
     region: region,
     environment: environment,
-    shortHashBytes: hexToArray(data.shortHash),
-    hashCode: coerceCode(data.hashName as HashName),
     id: data.id,
     version: data.version,
   }
@@ -257,8 +227,6 @@ const transformMessageIntoIdData = async (msg: Message<{}>): Promise<IdData> => 
     timestamp: obj.timestamp,
     region: region,
     environment: environment,
-    shortHash: arrayToHex(obj.shortHashBytes),
-    hashName: codes[(obj.hashCode as HashCode)],
     id: obj.id,
     version: obj.version,
   }

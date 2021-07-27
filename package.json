@@ -1,7 +1,7 @@
 {
   "name": "@truestamp/truestamp-id",
   "amdName": "TruestampId",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "description": "Truestamp ID serialize/deserialize utility written in Typescript that supports Node.js",
   "repository": {

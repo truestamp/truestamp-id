@@ -30,23 +30,9 @@ message Id {
 
   Environment environment = 3;
 
-  // Short Hash : A truncated version of the hash submitted by the user.
-  // The first 8 bytes of the hash are stored to ease correlation of this ID
-  // with a local document hash. An 8 byte truncated hash has a 0.001
-  // probability of collision in a pool of 1.9×10^8 (190,000,000) hashes. The
-  // probability of collision is good enough to use as an identifier. See :
-  // https://stackoverflow.com/questions/18134627/how-much-of-a-git-sha-is-generally-considered-necessary-to-uniquely-identify-a
-  // See : https://en.wikipedia.org/wiki/Birthday_problem#Probability_table
-  bytes short_hash_bytes = 4;
-
-  // The MultiHash type code in VarInt format.
-  // See : https://multiformats.io/multihash/
-  // See : https://github.com/multiformats/js-multihash
-  int32 hash_code = 5;
-
   // QLDB Base62 encoded 128-bit UUID number, with a length of 22 characters
-  string id = 6;
+  string id = 4;
 
   // QLDB document version number
-  int32 version = 7;
+  int32 version = 5;
 }
