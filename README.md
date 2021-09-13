@@ -14,6 +14,23 @@ An ID serialize/deserialize utility written in Typescript that supports Node.js.
 
 There is a working code example for Node.js in the [/examples](/examples) directory.
 
+## CLI
+
+There is a **very** simple CLI that will **UNSAFELY** decode a Truestamp ID and
+display the data stored within. It is considered unsafe because it does not verify
+the HMAC signature on the data since that key is only known to the service.
+
+```sh
+$ truestamp-id truestampKZKEECDT6D17Y5DDJ5WAJ963XSWDNRYRVVVTZ7ADG18R4JA9SK4D496BSCW34D6ZRF8D7N9NTZ13TE1HS6ZNH0R102ZYA2GQ
+{
+  timestamp: 1627359031,
+  region: 'us-east-1',
+  environment: 'staging',
+  id: '294jJ3YUoH1IEEm8GSabOs',
+  version: 0
+}
+```
+
 ## Contributing
 
 * Commit changes, merge PR's to `main` branch

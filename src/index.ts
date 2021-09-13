@@ -329,3 +329,32 @@ export const decodeId = async (id: string, key: Uint8Array): Promise<IdData> => 
 
   return data
 }
+
+/**
+ * Decode an ID into an IdData object UNSAFELY. This validates the data structure but does not verify
+ * the HMAC signature and should be used only for testing or development.
+ * @param {string}  id - A Base32 (Crockford) encoded string, optionally prefixed with `truestamp`.
+ * @return {Promise<IdData>} A Promise that resolves to the decoded IdData.
+ */
+export const decodeIdUnsafely = async (id: string): Promise<IdData> => {
+  // Remove the BASE32_PREFIX if present
+  const base32Id = id.replace(BASE32_PREFIX, "")
+
+  const root = Root.fromJSON(protoJSON)
+  const ProtoId = root.lookupType("truestamp.Id")
+
+  const compressedBuffer = base32Decode(base32Id.toUpperCase(), "Crockford")
+
+  const compressedBufferWithoutMac = compressedBuffer.slice(
+    HMAC_LENGTH
+  )
+
+  const compressUint8ArrayWithoutMac = new Uint8Array(compressedBufferWithoutMac)
+  const buffer = unzlibSync(compressUint8ArrayWithoutMac)
+  const msg = ProtoId.decode(buffer)
+  const data = await transformMessageIntoIdData(msg)
+
+  isValidIdData(data)
+
+  return data
+}
