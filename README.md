@@ -6,9 +6,12 @@ An ID serialize/deserialize utility written in Typescript that supports Node.js.
 
 ## ID Structure
 
-[LucidChart Doc](https://lucid.app/lucidchart/21ef4544-fa8e-4135-9657-40723a4bb293/edit?beaconFlowId=C1212F7C3FA80B71&page=0_0#)
+```txt
+T1201FFZSB24K0QMTG2YBW3A6DYYR_0
 
-![Truestamp ID Structure](docs/truestamp-id-structure.png "Truestamp ID Structure")
+T      1   2      01FFZSB24K0QMTG2YBW3A6DYYR _   0
+PREFIX ENV REGION ULID                       SEP VERSION
+```
 
 ## Example Code
 
@@ -16,18 +19,19 @@ There is a working code example for Node.js in the [/examples](/examples) direct
 
 ## CLI
 
-There is a **very** simple CLI that will **UNSAFELY** decode a Truestamp ID and
-display the data stored within. It is considered unsafe because it does not verify
-the HMAC signature on the data since that key is only known to the service.
+There is a **very** simple CLI that will decode a Truestamp ID and
+display the data stored within it.
 
 ```sh
-$ truestamp-id truestampKZKEECDT6D17Y5DDJ5WAJ963XSWDNRYRVVVTZ7ADG18R4JA9SK4D496BSCW34D6ZRF8D7N9NTZ13TE1HS6ZNH0R102ZYA2GQ
+$ truestamp-id T1201FFZSB24K0QMTG2YBW3A6DYYR_0
+
 {
-  timestamp: 1627359031,
-  region: 'us-east-1',
-  environment: 'staging',
-  id: '294jJ3YUoH1IEEm8GSabOs',
-  version: 0
+  "prefix": "T",
+  "env": "PRODUCTION",
+  "region": "US_EAST_1",
+  "ulid": "01FFZSB24K0QMTG2YBW3A6DYYR",
+  "ulidTimestamp": 1632080595091,
+  "version": 0
 }
 ```
 
