@@ -44,13 +44,13 @@ describe("Encoding", () => {
     })
 
     test("can create ID with params", async () => {
-        const id = ts.generateNewId(3, 4, '01FFZSB24K0QMTG2YBW3A6DYYR', 999)
+        const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 999, 'production', 'us-east-1')
         expect(ts.isValid(id)).toBeTruthy()
 
         const decoded = ts.decode(id)
         expect(decoded.prefix).toEqual('T')
-        expect(decoded.env).toEqual(3)
-        expect(decoded.region).toEqual(4)
+        expect(decoded.env).toEqual(1) // 1 = production
+        expect(decoded.region).toEqual(2) // 2 = us-east-1
         expect(decoded.ulid.length).toEqual(26)
         expect(decoded.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
         expect(decoded.version).toEqual(999)
@@ -58,7 +58,7 @@ describe("Encoding", () => {
 
     test("can detect invalid environment", async () => {
         const t = () => {
-            const id = ts.generateNewId(99)
+            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 0, 'foo', 'us-east-1')
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid environment");
@@ -66,7 +66,7 @@ describe("Encoding", () => {
 
     test("can detect invalid region", async () => {
         const t = () => {
-            const id = ts.generateNewId(1, 99)
+            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 0, 'production', 'foo')
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid region");
@@ -74,7 +74,7 @@ describe("Encoding", () => {
 
     test("can detect invalid ULID", async () => {
         const t = () => {
-            const id = ts.generateNewId(1, 1, 'foo')
+            const id = ts.generateNewId('foo', 0, 'production', 'us-east-1')
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid ULID");
@@ -82,7 +82,7 @@ describe("Encoding", () => {
 
     test("can detect invalid version", async () => {
         const t = () => {
-            const id = ts.generateNewId(1, 1, null, 'foo')
+            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 'foo', 'production', 'us-east-1')
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid version");

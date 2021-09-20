@@ -1,7 +1,7 @@
 // Copyright © 2021 Truestamp Inc. All Rights Reserved.
 
 // https://github.com/perry-mitchell/ulidx
-import { ulid } from "ulidx";
+import { ulid as ulidx } from "ulidx";
 
 const ULID_REGEX = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/
 const ID_REGEX = /^T[0-9]{1}[0-9]{1}[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{1,12}$/
@@ -14,30 +14,48 @@ const ID_REGEX = /^T[0-9]{1}[0-9]{1}[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]
 // See : https://www.typescriptlang.org/docs/handbook/enums.html
 
 export enum Environment {
-  PRODUCTION = 1,
-  STAGING = 2,
-  DEVELOPMENT = 3,
+  production = 1,
+  staging = 2,
+  development = 3,
+}
+
+// See : https://stackoverflow.com/a/69130789/3902629
+// Get the keys 'production' | 'staging' | 'development' (but not 'parse')
+type EnvironmentKey = keyof Omit<typeof Environment, 'parse'>;
+
+export namespace Environment {
+  export function parse(environmentName: EnvironmentKey) {
+    return Environment[environmentName];
+  }
 }
 
 // See : https://docs.aws.amazon.com/general/latest/gr/qldb.html
-// Ordered by service introduction.
-export enum QLDBRegion {
-  US_EAST_2 = 1,
-  US_EAST_1 = 2,
-  US_WEST_2 = 3,
-  AP_NORTHEAST_2 = 4,
-  AP_SOUTHEAST_1 = 5,
-  AP_SOUTHEAST_2 = 6,
-  AP_NORTHEAST_1 = 7,
-  EU_CENTRAL_1 = 8,
-  EU_WEST_1 = 9,
-  EU_WEST_2 = 10,
+// QLDB Regions, ordered by service introduction.
+export enum Region {
+  'us-east-2' = 1,
+  'us-east-1' = 2,
+  'us-west-2' = 3,
+  'ap-northeast-2' = 4,
+  'ap-southeast-1' = 5,
+  'ap-southeast-2' = 6,
+  'ap-northeast-1' = 7,
+  'eu-central-1' = 8,
+  'eu-west-1' = 9,
+  'eu-west-2' = 10,
+}
+
+type RegionKey = keyof Omit<typeof Region, 'parse'>;
+
+export namespace Region {
+  export function parse(regionName: RegionKey) {
+    return Region[regionName];
+  }
 }
 
 export interface Id {
   prefix: string // 'T' for Truestamp
   env: Environment // Enum value representing the environment
-  region: QLDBRegion // Enum value representing the QLDB AWS region and availability zone (e.g. us-east-1)
+  region: Region // Enum value representing the QLDB AWS region and availability zone (e.g. us-east-1)
   ulid: string // ULID used as QLDB Document Identifier (26 character Crockford Base32 string)
   ulidTimestamp?: number // Extracted timestamp component of the ULID (Milliseconds since Unix Epoch)
   version: number // QLDB Version Number
@@ -53,11 +71,11 @@ export const isValid = (id: string): boolean => {
 }
 
 /**
- * Encodes a Truestamp ID into a string.
+ * Encodes a Truestamp Id Type into a string.
  * @param id
- * @returns 
+ * @returns string
  */
-const encode = (id: Id): string => {
+export const encode = (id: Id): string => {
   if (id.prefix !== "T") {
     throw new Error("Invalid prefix");
   }
@@ -138,7 +156,7 @@ export const decodeToJSON = (id: string): string => {
   const pId = {
     prefix: dId.prefix,
     env: Environment[dId.env],
-    region: QLDBRegion[dId.region],
+    region: Region[dId.region],
     ulid: dId.ulid,
     version: dId.version,
   }
@@ -149,19 +167,30 @@ export const decodeToJSON = (id: string): string => {
 /**
  * Generate a new Truestamp ID string from parameters provided.
  * Defaults to generating a new ID for the Production environment in the US East (N. Virginia) region.
- * @param env Environment (optional)
- * @param region AWS Region (optional)
- * @param newUlid ULID (optional)
- * @param newVersion Version (optional)
- * @returns string
+ * 
+ * @param {string} [ulid] - A new ULID, defaults to newly generated ULID.
+ * @param {number} [version=0] - A version number.
+ * @param {string} [environment='production'] - An environment ['production', 'staging', 'development']
+ * @param {string} [region='us-east-1'] - An AWS Region (QLDB)
+ * @return {string} - A new Truestamp ID string.
  */
-export const generateNewId = (env: Environment, region: QLDBRegion, newUlid: string, newVersion: number): string => {
+export const generateNewId = (ulid: string, version: number, environment: string, region: string): string => {
+  const env = environment ? Environment.parse(environment as any) : Environment.production;
+  if (!env) {
+    throw new Error("Invalid environment");
+  }
+
+  const reg = region ? Region.parse(region as any) : Region['us-east-1'];
+  if (!reg) {
+    throw new Error("Invalid region");
+  }
+
   const id: Id = {
     prefix: "T",
-    env: env ?? Environment.PRODUCTION,
-    region: region ?? QLDBRegion.US_EAST_1,
-    ulid: newUlid ?? ulid(),
-    version: newVersion ?? 0,
+    env: env,
+    region: reg,
+    ulid: ulid ?? ulidx(),
+    version: version ?? 0,
   }
   return encode(id)
 }

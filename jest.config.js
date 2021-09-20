@@ -25,7 +25,9 @@ export default {
     "**/*.{js,jsx}",
     "!**/node_modules/**",
     "!**/coverage/**",
-    "!**/examples/**"
+    "!**/examples/**",
+    "!**/bin/**",
+    "!jest.config.js"
   ],
 
   // The directory where Jest should output its coverage files
