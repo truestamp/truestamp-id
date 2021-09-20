@@ -2,7 +2,6 @@
 
 // https://github.com/perry-mitchell/ulidx
 import { ulid } from "ulidx";
-import { decodeTime } from "ulidx/dist/ulid";
 
 const ULID_REGEX = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/
 const ID_REGEX = /^T[0-9]{1}[0-9]{1}[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{1,12}$/
@@ -141,7 +140,6 @@ export const decodeToJSON = (id: string): string => {
     env: Environment[dId.env],
     region: QLDBRegion[dId.region],
     ulid: dId.ulid,
-    ulidTimestamp: decodeTime(dId.ulid),
     version: dId.version,
   }
 
