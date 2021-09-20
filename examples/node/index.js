@@ -1,5 +1,5 @@
 // run `npm run build` to generate the library for testing.
-const ts = require("../../dist/truestamp-id.js")
+const ts = require("../../dist/truestamp-id.cjs")
 
 async function run() {
     const id1 = await ts.generateNewId()
