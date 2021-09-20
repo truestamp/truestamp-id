@@ -130,7 +130,7 @@ export const decode = (id: string): Id => {
 }
 
 /**
- * Decodes a Truestamp ID string into a JSON Object.
+ * Decodes a Truestamp ID string into a JSON Object with the Environment and QLDBRegion Enums expanded.
  * @param id
  * @returns string
  */
