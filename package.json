@@ -9,7 +9,7 @@
   "types": "./dist/index.d.ts",
   "license": "UNLICENSED",
   "amdName": "TruestampId",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "description": "Truestamp ID serialize/deserialize utility written in Typescript",
   "repository": {
