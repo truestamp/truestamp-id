@@ -1,15 +1,24 @@
 {
   "name": "@truestamp/truestamp-id",
   "type": "module",
-  "source": "src/index.ts",
-  "exports": "./dist/truestamp-id.modern.js",
+  "source": "./src/index.ts",
   "main": "./dist/truestamp-id.cjs",
   "module": "./dist/truestamp-id.module.js",
+  "umd:main": "./dist/truestamp-id.umd.js",
   "unpkg": "./dist/truestamp-id.umd.js",
+  "jsdelivr": "./dist/truestamp-id.umd.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/truestamp-id.cjs",
+      "import": "./dist/truestamp-id.module.js",
+      "node": "./dist/truestamp-id.cjs",
+      "default": "./dist/truestamp-id.module.js"
+    }
+  },
   "license": "UNLICENSED",
   "amdName": "TruestampId",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "description": "Truestamp ID serialize/deserialize utility written in Typescript",
   "repository": {
@@ -22,7 +31,9 @@
   "homepage": "https://github.com/truestamp/truestamp-id",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && microbundle --tsconfig tsconfig.json",
+    "build-web": "microbundle --target=web --tsconfig tsconfig.json --format es,umd,modern",
+    "build-node": "microbundle --target=node --tsconfig tsconfig.json --format cjs",
+    "build": "npx package-check && npm run clean && npm run build-web && npm run build-node",
     "dev": "microbundle watch --tsconfig tsconfig.json",
     "test": "jest --config jest.config.js --detectOpenHandles"
   },
