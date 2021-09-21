@@ -1,64 +1,75 @@
 // Copyright © 2021 Truestamp Inc. All Rights Reserved.
+const { ulid } = require("ulidx");
 
-const ts = require("../dist/truestamp-id.umd.js")
+const id = require("../dist/truestamp-id.umd.js")
 
 describe("Decoding", () => {
     test("can decode simple ID", async () => {
-        const sampleId = "T1201FFZSB24K0QMTG2YBW3A6DYYR_0"
-        expect(ts.isValid(sampleId)).toBeTruthy()
+        const testId = "T1201FFZSB24K0QMTG2YBW3A6DYYR_0"
+        expect(id.isValid(testId)).toBeTruthy()
 
-        const id = ts.decode(sampleId)
+        const decoded = id.decode(testId)
 
-        expect(id.prefix).toEqual('T')
-        expect(id.env).toEqual(1) // 1 = production
-        expect(id.region).toEqual(2) // 2 = US_EAST_1
-        expect(id.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
-        expect(id.version).toEqual(0)
+        expect(decoded.prefix).toEqual('T')
+        expect(decoded.env).toEqual('production')
+        expect(decoded.region).toEqual('us-east-1')
+        expect(decoded.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
+        expect(decoded.version).toEqual(0)
     })
 
     test("can decode simple ID with large version", async () => {
         const sampleId = "T1201FFZSB24K0QMTG2YBW3A6DYYR_999999999"
-        expect(ts.isValid(sampleId)).toBeTruthy()
+        expect(id.isValid(sampleId)).toBeTruthy()
 
-        const id = ts.decode(sampleId)
+        const decoded = id.decode(sampleId)
 
-        expect(id.prefix).toEqual('T')
-        expect(id.env).toEqual(1) // 1 = production
-        expect(id.region).toEqual(2) // 2 = US_EAST_1
-        expect(id.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
-        expect(id.version).toEqual(999999999)
+        expect(decoded.prefix).toEqual('T')
+        expect(decoded.env).toEqual('production')
+        expect(decoded.region).toEqual('us-east-1')
+        expect(decoded.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
+        expect(decoded.version).toEqual(999999999)
     })
+
+    test("can detect invalid ID", async () => {
+        const t = () => {
+            id.decode('foo')
+        };
+        expect(t).toThrow(Error);
+        expect(t).toThrow("Invalid ID");
+    })
+
 })
 
 describe("Encoding", () => {
     test("can create simple ID with defaults", async () => {
-        const id = ts.generateNewId()
-        expect(ts.isValid(id)).toBeTruthy()
+        const testId = id.generate()
+        expect(id.isValid(testId)).toBeTruthy()
 
-        const decoded = ts.decode(id)
+        const decoded = id.decode(testId)
         expect(decoded.prefix).toEqual('T')
-        expect(decoded.env).toEqual(1) // 1 = production
-        expect(decoded.region).toEqual(2) // 2 = US_EAST_1
+        expect(decoded.env).toEqual('production')
+        expect(decoded.region).toEqual('us-east-1')
         expect(decoded.ulid.length).toEqual(26)
         expect(decoded.version).toEqual(0)
     })
 
     test("can create ID with params", async () => {
-        const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 999, 'production', 'us-east-1')
-        expect(ts.isValid(id)).toBeTruthy()
+        const u = ulid()
+        const testId = id.generate({ ulid: u, version: 999, env: 'development', region: 'us-west-2' })
+        expect(id.isValid(testId)).toBeTruthy()
 
-        const decoded = ts.decode(id)
+        const decoded = id.decode(testId)
         expect(decoded.prefix).toEqual('T')
-        expect(decoded.env).toEqual(1) // 1 = production
-        expect(decoded.region).toEqual(2) // 2 = us-east-1
+        expect(decoded.env).toEqual('development')
+        expect(decoded.region).toEqual('us-west-2')
         expect(decoded.ulid.length).toEqual(26)
-        expect(decoded.ulid).toEqual('01FFZSB24K0QMTG2YBW3A6DYYR')
+        expect(decoded.ulid).toEqual(u)
         expect(decoded.version).toEqual(999)
     })
 
     test("can detect invalid environment", async () => {
         const t = () => {
-            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 0, 'foo', 'us-east-1')
+            id.generate({ env: 'foo' })
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid environment");
@@ -66,7 +77,7 @@ describe("Encoding", () => {
 
     test("can detect invalid region", async () => {
         const t = () => {
-            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 0, 'production', 'foo')
+            id.generate({ region: 'foo' })
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid region");
@@ -74,7 +85,7 @@ describe("Encoding", () => {
 
     test("can detect invalid ULID", async () => {
         const t = () => {
-            const id = ts.generateNewId('foo', 0, 'production', 'us-east-1')
+            id.generate({ ulid: 'foo' })
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid ULID");
@@ -82,7 +93,7 @@ describe("Encoding", () => {
 
     test("can detect invalid version", async () => {
         const t = () => {
-            const id = ts.generateNewId('01FFZSB24K0QMTG2YBW3A6DYYR', 'foo', 'production', 'us-east-1')
+            id.generate({ version: '0' })
         };
         expect(t).toThrow(Error);
         expect(t).toThrow("Invalid version");

@@ -1,7 +1,7 @@
 // Copyright © 2021 Truestamp Inc. All Rights Reserved.
 
 // https://github.com/perry-mitchell/ulidx
-import { ulid as ulidx } from "ulidx";
+import { ULID, ulid as ulidx } from "ulidx";
 
 const ULID_REGEX = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/
 const ID_REGEX = /^T[0-9]{1}[0-9]{1}[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{1,12}$/
@@ -52,44 +52,109 @@ export namespace Region {
   }
 }
 
-export interface Id {
+export type ID = string;
+
+interface BaseId {
   prefix: string // 'T' for Truestamp
-  env: Environment // Enum value representing the environment
-  region: Region // Enum value representing the QLDB AWS region and availability zone (e.g. us-east-1)
-  ulid: string // ULID used as QLDB Document Identifier (26 character Crockford Base32 string)
-  ulidTimestamp?: number // Extracted timestamp component of the ULID (Milliseconds since Unix Epoch)
+  ulid: ULID // ULID is used as QLDB Document Identifier (26 character Crockford Base32 string)
   version: number // QLDB Version Number
 }
 
-export const isValid = (id: string): boolean => {
-  try {
-    decode(id);
-    return true;
-  } catch (e) {
-    return false;
+export interface IdEnum extends BaseId {
+  env: Environment // Enum value representing the environment
+  region: Region // Enum value representing the QLDB AWS region and availability zone (e.g. us-east-1)
+}
+
+export interface IdString extends BaseId {
+  env: string
+  region: string
+}
+
+export interface IdGenerateArgs {
+  ulid?: ULID
+  version?: number
+  env?: string
+  region?: string
+}
+
+/**
+ * Generate a new Truestamp ID.
+ * With no args, defaults to generating a new ID, with a new ULID, version '0',
+ * for the Production environment, and in the AWS 'us-east-1' region.
+ *
+ * @param {IdGenerateArgs} [id] - A collection of parameters for creating a new ID.
+ * @return {ID} - A new Truestamp ID string.
+ */
+export const generate = (id: IdGenerateArgs = {}): ID => {
+  const { ulid = ulidx(), version = 0, env = 'production', region = 'us-east-1' } = id;
+
+  const newEnv = env ? Environment.parse(env as any) : Environment.production;
+  if (!newEnv) {
+    throw new Error("Invalid environment");
   }
+
+  const newRegion = region ? Region.parse(region as any) : Region['us-east-1'];
+  if (!newRegion) {
+    throw new Error("Invalid region");
+  }
+
+  const newUlid: ULID = ulid ? ulid : ulidx();
+
+  const newVersion: number = version ? version : 0;
+
+  const idToEncode: IdEnum = {
+    prefix: "T",
+    env: newEnv,
+    region: newRegion,
+    ulid: newUlid,
+    version: newVersion,
+  }
+
+  return encode(idToEncode)
 }
 
 /**
  * Encodes a Truestamp Id Type into a string.
- * @param id
- * @returns string
+ * @param {IdEnum | IdString} id - A Truestamp Id Type.
+ * @return {ID} - A Truestamp Id string.
  */
-export const encode = (id: Id): string => {
+export const encode = (id: IdEnum | IdString): ID => {
+  if (!id) {
+    throw new Error('Id is required');
+  }
+
   if (id.prefix !== "T") {
     throw new Error("Invalid prefix");
   }
-  if (id.env < 1 || id.env > 3) {
-    throw new Error("Invalid environment");
-  }
-  if (id.region < 1 || id.region > 10) {
-    throw new Error("Invalid region");
-  }
+
   if (!ULID_REGEX.test(id.ulid)) {
     throw new Error("Invalid ULID");
   }
+
   if (!Number.isInteger(id.version) || id.version < 0 || id.version > 999999999) {
     throw new Error("Invalid version");
+  }
+
+  let parsedEnv: Environment;
+  if (typeof id.env === "string") {
+    parsedEnv = Environment.parse(id.env as any)
+    if (!parsedEnv) {
+      throw new Error("Invalid environment");
+    }
+  } else {
+    // Enum value
+    parsedEnv = id.env;
+  }
+
+  let parsedRegion: Region;
+  if (typeof id.region === "string") {
+    parsedRegion = Region.parse(id.region as any)
+    if (!parsedRegion) {
+      throw new Error("Invalid region");
+    }
+  } else {
+    // Enum value
+    parsedRegion = id.region;
   }
 
   return `${id.prefix}${id.env}${id.region}${id.ulid}_${id.version}`;
@@ -97,10 +162,10 @@ export const encode = (id: Id): string => {
 
 /**
  * Decodes a Truestamp ID string into an Id type.
- * @param id
- * @returns Id
+ * @param {ID} id - A Truestamp ID string.
+ * @return {IdString} - A decoded Id type with Enums as strings.
  */
-export const decode = (id: string): Id => {
+export const decode = (id: ID): IdString => {
   if (!ID_REGEX.test(id)) {
     throw new Error("Invalid ID");
   }
@@ -135,10 +200,10 @@ export const decode = (id: string): Id => {
     throw new Error("Invalid version");
   }
 
-  const parsedId: Id = {
+  const parsedId: IdString = {
     prefix,
-    env,
-    region,
+    env: Environment[env],
+    region: Region[region],
     ulid,
     version,
   };
@@ -147,50 +212,15 @@ export const decode = (id: string): Id => {
 }
 
 /**
- * Decodes a Truestamp ID string into a JSON Object with the Environment and QLDBRegion Enums expanded.
- * @param id
- * @returns string
+ * Validates a Truestamp ID string. Does not indicate if the ID exists, only that it's structure is valid.
+ * @param {ID} id - A Truestamp ID string.
+ * @return {boolean} - True if the ID structure is valid, false otherwise.
  */
-export const decodeToJSON = (id: string): string => {
-  const dId: Id = decode(id)
-  const pId = {
-    prefix: dId.prefix,
-    env: Environment[dId.env],
-    region: Region[dId.region],
-    ulid: dId.ulid,
-    version: dId.version,
+export const isValid = (id: ID): boolean => {
+  try {
+    decode(id);
+    return true;
+  } catch (e) {
+    return false;
   }
-
-  return JSON.stringify(pId)
-}
-
-/**
- * Generate a new Truestamp ID string from parameters provided.
- * Defaults to generating a new ID for the Production environment in the US East (N. Virginia) region.
- * 
- * @param {string} [ulid] - A new ULID, defaults to newly generated ULID.
- * @param {number} [version=0] - A version number.
- * @param {string} [environment='production'] - An environment ['production', 'staging', 'development']
- * @param {string} [region='us-east-1'] - An AWS Region (QLDB)
- * @return {string} - A new Truestamp ID string.
- */
-export const generateNewId = (ulid: string, version: number, environment: string, region: string): string => {
-  const env = environment ? Environment.parse(environment as any) : Environment.production;
-  if (!env) {
-    throw new Error("Invalid environment");
-  }
-
-  const reg = region ? Region.parse(region as any) : Region['us-east-1'];
-  if (!reg) {
-    throw new Error("Invalid region");
-  }
-
-  const id: Id = {
-    prefix: "T",
-    env: env,
-    region: reg,
-    ulid: ulid ?? ulidx(),
-    version: version ?? 0,
-  }
-  return encode(id)
 }
