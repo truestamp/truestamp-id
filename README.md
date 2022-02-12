@@ -44,4 +44,4 @@ $ truestamp-id T1201FFZSB24K0QMTG2YBW3A6DYYR_0
 
 ## Legal
 
-Copyright © 2021 Truestamp Inc. All Rights Reserved.
+Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.
