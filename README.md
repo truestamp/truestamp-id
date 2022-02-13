@@ -1,17 +1,26 @@
-# Truestamp ID
+# Truestamp Id
 
 ## Description
 
-An ID serialize/deserialize utility written in Typescript that supports Node.js.
+A Truestamp Id serialize/deserialize utility written in Typescript.
 
-## ID Structure
+## Id Structure
 
 ```txt
 T1201FFZSB24K0QMTG2YBW3A6DYYR_0
 
-T      1   2      01FFZSB24K0QMTG2YBW3A6DYYR _   0
-PREFIX ENV REGION ULID                       SEP VERSION
+truestamp _   live _   01FFZSB24K0QMTG2YBW3A6DYYR _   1640995200000000
+PREFIX    SEP ENV  SEP ULID                       SEP TIMESTAMP
 ```
+
+Note:
+
+* the prefix is always 'truestamp'
+* the separator is always an underscore (`_`) to allow for double-click selection of the whole Id
+* the environment can be one of 'live' or 'test'
+* the entire Id should be lexically sortable by environment, item id (ULID), and finally by timestamp version within an item.
+* the timestamp embedded in the ULID represents creation time of the first version of an item and should be sourced from [https://github.com/truestamp/ulid-generator](ulid-generator) to ensure monotonicity.
+* the timestamp field represents each immutable version of that item as it changes (microseconds since UNIX Epoch)
 
 ## Example Code
 
@@ -23,15 +32,12 @@ There is a **very** simple CLI that will decode a Truestamp ID and
 display the data stored within it.
 
 ```sh
-$ truestamp-id T1201FFZSB24K0QMTG2YBW3A6DYYR_0
+$ truestamp-id truestamp_live_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000
 
 {
-  "prefix": "T",
-  "env": "PRODUCTION",
-  "region": "US_EAST_1",
-  "ulid": "01FFZSB24K0QMTG2YBW3A6DYYR",
-  "ulidTimestamp": 1632080595091,
-  "version": 0
+  "env": "live",
+  "ulid": "01FVT3WY91XS23HQ32NHA9AD24",
+  "timestamp": 1640995200000000
 }
 ```
 
