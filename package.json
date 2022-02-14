@@ -20,7 +20,7 @@
   "amdName": "TruestampId",
   "version": "1.0.0",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
-  "description": "Truestamp ID serialize/deserialize utility written in Typescript",
+  "description": "Truestamp Id serialize/deserialize library written in Typescript",
   "repository": {
     "type": "git",
     "url": "https://github.com/truestamp/truestamp-id.git"

@@ -2,7 +2,7 @@
 
 ## Description
 
-A Truestamp Id serialize/deserialize utility written in Typescript.
+A Truestamp Id serialize/deserialize library written in Typescript.
 
 ## Id Structure
 
