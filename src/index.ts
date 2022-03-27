@@ -1,10 +1,10 @@
 // Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.
 
-const ID_PREFIX = "truestamp";
+const ID_PREFIX = "t";
 const ID_SEPARATOR = "_";
 const ULID_REGEX = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
 const ID_REGEX =
-  /^truestamp_(test|live)_[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{16}$/;
+  /^t_(test|live)_[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{16}$/;
 const ENVIRONMENTS = ["live", "test"];
 
 export type Id = {

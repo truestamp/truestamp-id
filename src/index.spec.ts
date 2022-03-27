@@ -5,7 +5,7 @@ const id = require("../dist/truestamp-id.umd.js");
 
 describe("the decode() function", () => {
   test("can decode simple Id", async () => {
-    const t = "truestamp_live_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000";
+    const t = "t_live_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000";
 
     const decoded = id.decode(t);
 
@@ -80,7 +80,7 @@ describe("the encode() function", () => {
 
 describe("the isValid() function", () => {
   test("can validate simple Id", async () => {
-    const t = "truestamp_test_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000";
+    const t = "t_test_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000";
     expect(id.isValid(t)).toBeTruthy();
   });
 
