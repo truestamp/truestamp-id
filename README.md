@@ -7,20 +7,22 @@ A Truestamp Id serialize/deserialize library written in Typescript.
 ## Id Structure
 
 ```txt
-t_live_01FFZSB24K0QMTG2YBW3A6DYYR_1640995200000000
+T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
 
-t      _   live _   01FFZSB24K0QMTG2YBW3A6DYYR _   1640995200000000
-PREFIX SEP ENV  SEP ULID                       SEP TIMESTAMP
+T      1       0    _   01FZ93KY67VYMFTVXTJ5BKWGT7 _   1640995200000000 _   63F9FA40EEC63EC865ABAB31A9ED1638
+PREFIX VERSION TEST SEP ULID                       SEP TIMESTAMP        SEP HMAC-SHA256 (truncated to 16B)
 ```
 
 Note:
 
-* the prefix is always 't'
+* the prefix is always 'T'
+* the version is currently '1'
+* the test value represents a Boolean and can be a '1' (test env) or a '0' (production)
 * the separator is always an underscore (`_`) to allow for double-click selection of the whole Id
-* the environment can be one of 'live' or 'test'
-* the entire Id should be lexically sortable by environment, item id (ULID), and finally by timestamp version within an item.
-* the timestamp embedded in the ULID represents creation time of the first version of an item and should be sourced from [https://github.com/truestamp/ulid-generator](ulid-generator) to ensure monotonicity.
-* the timestamp field represents each immutable version of that item as it changes (microseconds since UNIX Epoch)
+* the entire Id should be lexically sortable by ULID and timestamp as the primary sorts.
+* the timestamp embedded in the ULID represents creation time of the first version of an Item
+* the timestamp field represents each immutable version of that Item as it changes (in microseconds since UNIX Epoch)
+* the HMAC is constructed as `hmac(ID_WITHOUT_HMAC || ENVELOPE_HASH)` which allows commitment of the ID to its own contents and the Envelope hash. It can only be verified by the signer who holds the HMAC key.
 
 ## Example Code
 
@@ -32,7 +34,7 @@ There is a **very** simple CLI that will decode a Truestamp ID and
 display the data stored within it.
 
 ```sh
-$ truestamp-id t_live_01FFZSB24K0QMTG2YBW3A6DYYR_1644772755000000
+$ truestamp-id T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
 
 {
   "env": "live",

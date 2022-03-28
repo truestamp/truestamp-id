@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
     "strict": true,
-    "declaration": true,
     "module": "ESNext",
     "target": "ESNext",
+    "declaration": true,
     "moduleResolution": "Node",
+    "esModuleInterop": true,
   },
   "include": [
-    "src/**/*.ts",
-    "test/index.spec.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts",
-    "examples/config.json",
-    "jest.config.js"
+    "examples/"
   ],
 }
