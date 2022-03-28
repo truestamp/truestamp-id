@@ -34,12 +34,12 @@ There is a **very** simple CLI that will decode a Truestamp ID and
 display the data stored within it.
 
 ```sh
-$ truestamp-id T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
-
+❯ ./bin/truestamp-id.cjs T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
 {
-  "env": "live",
-  "ulid": "01FVT3WY91XS23HQ32NHA9AD24",
-  "timestamp": 1640995200000000
+  version: 1,
+  test: false,
+  ulid: '01FZ93KY67VYMFTVXTJ5BKWGT7',
+  timestamp: 1640995200000000
 }
 ```
 
