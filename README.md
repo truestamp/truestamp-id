@@ -26,7 +26,13 @@ Note:
 
 ## Example Code
 
-There is a working code example for Node.js in the [/examples](/examples) directory.
+There is an example for Node.js in the [/examples](/examples) directory.
+
+```sh
+cd examples/node
+npm i
+node index.js
+```
 
 ## CLI
 
