@@ -47,6 +47,7 @@
     "default": "./lib/index.mjs"
   },
   "scripts": {
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.spec.ts'",
     "clean": "rimraf lib",
     "docs": "npx typedoc --plugin typedoc-plugin-extras --options typedoc.json src/index.ts",
     "docs-preview": "npx live-server docs",
