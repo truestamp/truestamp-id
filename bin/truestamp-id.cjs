@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const id = require('../dist/truestamp-id.cjs');
+const id = require('../lib/index.cjs');
 try {
   // Unsafely decode the Id, with no HMAC validation
   const idParsed = id.decodeUnsafely({ id: process.argv[2] })

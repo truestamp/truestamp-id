@@ -2,11 +2,11 @@
 
 ## Description
 
-A Truestamp Id serialize/deserialize library written in Typescript.
+A Truestamp Id serialize/deserialize library and command line tool written in Typescript.
 
 ## Id Structure
 
-```txt
+```text
 T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
 
 T      1       0    _   01FZ93KY67VYMFTVXTJ5BKWGT7 _   1640995200000000 _   63F9FA40EEC63EC865ABAB31A9ED1638
@@ -23,6 +23,12 @@ Note:
 * the timestamp embedded in the ULID represents creation time of the first version of an Item
 * the timestamp field represents each immutable version of that Item as it changes (in microseconds since UNIX Epoch)
 * the HMAC is constructed as `hmac(ID_WITHOUT_HMAC || ENVELOPE_HASH)` which allows commitment of the ID to its own contents and the Envelope hash. It can only be verified by the signer who holds the HMAC key.
+
+## Installation
+
+```sh
+npm install @truestamp/id
+```
 
 ## Example Code
 

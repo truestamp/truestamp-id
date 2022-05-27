@@ -1,7 +1,7 @@
 // Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.
 
 const { ulid } = require("ulidx");
-import { encode, decode, decodeUnsafely, isValid, isValidUnsafely } from './index'
+import { encode, decode, decodeUnsafely, isValid, isValidUnsafely } from '../src/index'
 
 // Samples
 const HMAC_KEY =

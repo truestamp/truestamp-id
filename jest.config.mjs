@@ -31,7 +31,7 @@ export default {
   // ],
   coveragePathIgnorePatterns: [
     "/node_modules/",
-    "/dist/",
+    "/lib/",
     "/examples/",
   ],
 

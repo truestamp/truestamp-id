@@ -1,4 +1,4 @@
-// Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.
+// Copyright © 2020-2022 Truestamp Inc. All rights reserved.
 
 import { hmac as createHmac } from "@noble/hashes/hmac";
 import { sha256 } from "@noble/hashes/sha256";
@@ -31,7 +31,7 @@ const REGEX_HMAC_TRUNC = /^(([A-F0-9]{2}){16})$/i;
 const REGEX_ID =
   /^T(1)(0|1)_[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}_[0-9]{16}_[0-9A-F]{32}$/;
 
-const IdV1Struct = object({
+export const IdV1Struct = object({
   prefix: defaulted(enums(['T']), ID_PREFIX),
   version: size(integer(), 1, 1), // 1 is the only valid version for now
   test: defaulted(boolean(), false),
@@ -44,14 +44,16 @@ const IdV1Struct = object({
 });
 
 // The subset of IdV1Struct needed to parse an Id
-const IdV1ParseArgsStruct = pick(IdV1Struct, [
+export const IdV1ParseArgsStruct = pick(IdV1Struct, [
   "id",
 ]);
 
 export type IdV1ParseArgs = Infer<typeof IdV1ParseArgsStruct>;
 
-// The subset of IdV1Struct parsed from a decoded Id
-const IdV1ParsedStruct = pick(IdV1Struct, [
+/**
+ * The subset of IdV1Struct parsed from a decoded Id
+ */
+export const IdV1ParsedStruct = pick(IdV1Struct, [
   "prefix",
   "version",
   "test",
@@ -62,8 +64,11 @@ const IdV1ParsedStruct = pick(IdV1Struct, [
 
 export type IdV1Parsed = Infer<typeof IdV1ParsedStruct>;
 
-// The subset of IdV1Struct needed to encode a new Id
-const IdV1EncodeArgsStruct = pick(IdV1Struct, [
+
+/**
+ * The subset of IdV1Struct needed to encode a new Id
+ */
+export const IdV1EncodeArgsStruct = pick(IdV1Struct, [
   "version",
   "test",
   "ulid",
@@ -74,8 +79,10 @@ const IdV1EncodeArgsStruct = pick(IdV1Struct, [
 
 export type IdV1EncodeArgs = Infer<typeof IdV1EncodeArgsStruct>;
 
-// The subset of IdV1Struct needed to decode a new Id
-const IdV1DecodeArgsStruct = pick(IdV1Struct, [
+/**
+ * The subset of IdV1Struct needed to decode a new Id
+ */
+export const IdV1DecodeArgsStruct = pick(IdV1Struct, [
   "id",
   "envelopeHash",
   "hmacKey",
@@ -83,9 +90,10 @@ const IdV1DecodeArgsStruct = pick(IdV1Struct, [
 
 export type IdV1DecodeArgs = Infer<typeof IdV1DecodeArgsStruct>;
 
-
-// The subset of IdV1Struct returned from a decoded Id
-const IdV1DecodeStruct = pick(IdV1Struct, [
+/**
+ * The subset of IdV1Struct returned from a decoded Id
+ */
+export const IdV1DecodeStruct = pick(IdV1Struct, [
   "version",
   "test",
   "ulid",
@@ -95,7 +103,10 @@ const IdV1DecodeStruct = pick(IdV1Struct, [
 
 export type IdV1Decode = Infer<typeof IdV1DecodeStruct>;
 
-const IdV1DecodeUnsafelyStruct = pick(IdV1Struct, [
+/**
+ * The subset of IdV1Struct returned from a decoded unsafely Id
+ */
+export const IdV1DecodeUnsafelyStruct = pick(IdV1Struct, [
   "version",
   "test",
   "ulid",
@@ -106,8 +117,8 @@ export type IdV1DecodeUnsafely = Infer<typeof IdV1DecodeUnsafelyStruct>;
 
 /**
  * Parse the Id components from a string into an Object. Throws an error if the string is not a valid Id.
- * @param {IdV1ParseArgs} [args] - The parse function args with the Id to parse
- * @return {IdV1Parsed} - A parsed Truestamp Id.
+ * @param args.id - The parse function args with the Id to parse
+ * @return - A parsed Truestamp Id.
  */
 const parseId = (args: IdV1ParseArgs): IdV1Parsed => {
   try {
@@ -146,11 +157,16 @@ const parseId = (args: IdV1ParseArgs): IdV1Parsed => {
 /**
  * Encodes args into a string Truestamp Id. Throws an error if any of the
  * args are invalid.
- * @param {IdV1EncodeArgs} [args] - Encode new Id arguments.
- * @return {string} - A Truestamp Id string.
+ *
+ * @param args.version - The Id version
+ * @param args.test - Whether the Id is a test Id
+ * @param args.ulid - The ULID of the Id
+ * @param args.timestamp - The timestamp of the Id
+ * @param args.envelopeHash - The hash of the envelope
+ * @param args.hmacKey - The HMAC key
+ * @return - A Truestamp Id string.
  */
 export const encode = (args: IdV1EncodeArgs): string => {
-  // Validate the args, throws if invalid.
   const validArgs = create(args, IdV1EncodeArgsStruct);
 
   // Create the base of the Id, with all components except the HMAC
@@ -175,16 +191,16 @@ export const encode = (args: IdV1EncodeArgs): string => {
 };
 
 /**
- * Decodes a Truestamp Id string into an Id object with HMAC-SHA256 verification. Throws an error if the ID is invalid.
- * @param {IdV1DecodeArgs} [args] - Decode Id arguments.
- * @param {string} args.id - A Truestamp Id string.
- * @param {string} args.envelopeHash - The top-level hash in the Item Envelope that this Id commits to with an HMAC-SHA256.
- * @param {string} args.hmacKey - The secret key used to verify the HMAC-SHA256.
- * @return {IdV1Decode} - A decoded Id object.
+ * Decodes a Truestamp Id string into an Id object with HMAC-SHA256 verification.
+ * Throws an error if the ID is invalid.
+ *
+ * @param args.id - A Truestamp Id string.
+ * @param args.envelopeHash - The top-level hash in the Item Envelope that this Id commits to with an HMAC-SHA256.
+ * @param args.hmacKey - The secret key used to verify the HMAC-SHA256.
+ * @return - A decoded Id object.
  */
 export const decode = (args: IdV1DecodeArgs): IdV1Decode => {
   try {
-    // Validate the args, throws if invalid.
     const validArgs = create(args, IdV1DecodeArgsStruct);
 
     const { prefix, version, test, ulid, timestamp, hmac } = parseId({ id: validArgs.id });
@@ -225,10 +241,12 @@ export const decode = (args: IdV1DecodeArgs): IdV1Decode => {
 };
 
 /**
- * Validates and decodes a Truestamp Id string unsafely with NO HMAC verification. Not recommended for normal use. Indicates only that the Id has a valid structure. Throws an 'Error' if the Id has an invalid structure.
- * @param {Object} args - function args.
- * @param {string} args.id - A Truestamp Id string.
- * @return {IdV1DecodeUnsafely} - Id Object with no HMAC verification.
+ * Validates and decodes a Truestamp Id string unsafely with NO HMAC verification. Not recommended
+ * for normal use. Indicates only that the Id has a valid structure. Throws an 'Error' if the Id
+ * has an invalid structure.
+ *
+ * @param args.id - A Truestamp Id string.
+ * @return - Id Object with no HMAC verification.
  */
 export const decodeUnsafely = ({ id }: { id: string }): IdV1DecodeUnsafely => {
   const { version, test, ulid, timestamp } = parseId({ id });
@@ -257,12 +275,14 @@ export const decodeUnsafely = ({ id }: { id: string }): IdV1DecodeUnsafely => {
 };
 
 /**
- * Validates a Truestamp Id string with HMAC verification. Does not indicate if the content pointed to by the Id exists, only that it has a valid structure and HMAC. Returns false if the Id is invalid (does not throw).
- * @param {Object} args - function args.
- * @param {string} args.id - A Truestamp Id string.
- * @param {string} args.envelopeHash - The top-level hash in the Item Envelope that this Id commits to with an HMAC-SHA256.
- * @param {string} args.hmacKey - A Hex key used to verify the HMAC-SHA256.
- * @return {boolean} - is the Truestamp Id structure valid?
+ * Validates a Truestamp Id string with HMAC verification. Does not indicate if the content
+ * pointed to by the Id exists, only that it has a valid structure and HMAC. Returns false
+ * if the Id is invalid (does not throw).
+ *
+ * @param args.id - A Truestamp Id string.
+ * @param args.envelopeHash - The top-level hash in the Item Envelope that this Id commits to with an HMAC-SHA256.
+ * @param args.hmacKey - A Hex key used to verify the HMAC-SHA256.
+ * @return - Is the Truestamp Id structure valid?
  */
 export const isValid = (args: IdV1DecodeArgs): boolean => {
   try {
@@ -276,10 +296,11 @@ export const isValid = (args: IdV1DecodeArgs): boolean => {
 };
 
 /**
- * Validates a Truestamp Id string unsafely with NO HMAC verification. Not recommended for normal use. Indicates only that the Id has a valid structure. Returns false if the Id is invalid (does not throw).
- * @param {Object} args - function args.
- * @param {string} args.id - A Truestamp Id string.
- * @return {boolean} - is the Truestamp Id structure valid?
+ * Validates a Truestamp Id string unsafely with NO HMAC verification. Not recommended for
+ * normal use. Indicates only that the Id has a valid structure. Returns false if the Id
+ * is invalid (does not throw).
+ * @param args.id - A Truestamp Id string.
+ * @return - Is the Truestamp Id structure valid?
  */
 export const isValidUnsafely = ({ id }: { id: string }): boolean => {
   try {
