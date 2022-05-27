@@ -1,0 +1,66 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@truestamp/id - v1.1.6</title><meta name="description" content="Documentation for @truestamp/id - v1.1.6"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="https://github.com/truestamp/truestamp-id" class="title">github.com/truestamp/truestamp-id</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@truestamp/id - v1.1.6 </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#truestamp-id" id="truestamp-id" style="color: inherit; text-decoration: none;">
+  <h1>Truestamp Id</h1>
+</a>
+
+<a href="#description" id="description" style="color: inherit; text-decoration: none;">
+  <h2>Description</h2>
+</a>
+<p>A Truestamp Id serialize/deserialize library and command line tool written in Typescript.</p>
+
+<a href="#id-structure" id="id-structure" style="color: inherit; text-decoration: none;">
+  <h2>Id Structure</h2>
+</a>
+<pre><code class="language-text">T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638
+
+T      1       0    _   01FZ93KY67VYMFTVXTJ5BKWGT7 _   1640995200000000 _   63F9FA40EEC63EC865ABAB31A9ED1638
+PREFIX VERSION TEST SEP ULID                       SEP TIMESTAMP        SEP HMAC-SHA256 (truncated to 16B)
+</code></pre>
+<p>Note:</p>
+<ul>
+<li>the prefix is always &#39;T&#39;</li>
+<li>the version is currently &#39;1&#39;</li>
+<li>the test value represents a Boolean and can be a &#39;1&#39; (test env) or a &#39;0&#39; (production)</li>
+<li>the separator is always an underscore (<code>_</code>) to allow for double-click selection of the whole Id</li>
+<li>the entire Id should be lexically sortable by ULID and timestamp as the primary sorts.</li>
+<li>the timestamp embedded in the ULID represents creation time of the first version of an Item</li>
+<li>the timestamp field represents each immutable version of that Item as it changes (in microseconds since UNIX Epoch)</li>
+<li>the HMAC is constructed as <code>hmac(ID_WITHOUT_HMAC || ENVELOPE_HASH)</code> which allows commitment of the ID to its own contents and the Envelope hash. It can only be verified by the signer who holds the HMAC key.</li>
+</ul>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<pre><code class="language-sh"><span class="hl-0">npm install @truestamp/id</span>
+</code></pre>
+
+<a href="#example-code" id="example-code" style="color: inherit; text-decoration: none;">
+  <h2>Example Code</h2>
+</a>
+<p>There is an example for Node.js in the <a href="/examples">/examples</a> directory.</p>
+<pre><code class="language-sh"><span class="hl-1">cd</span><span class="hl-0"> examples/node</span><br/><span class="hl-0">npm i</span><br/><span class="hl-0">node index.js</span>
+</code></pre>
+
+<a href="#cli" id="cli" style="color: inherit; text-decoration: none;">
+  <h2>CLI</h2>
+</a>
+<p>There is a <strong>very</strong> simple CLI that will decode a Truestamp ID and
+display the data stored within it.</p>
+<pre><code class="language-sh"><span class="hl-0">❯ ./bin/truestamp-id.cjs T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638</span><br/><span class="hl-0">{</span><br/><span class="hl-0">  version: 1,</span><br/><span class="hl-0">  test: false,</span><br/><span class="hl-0">  ulid: </span><span class="hl-2">&#39;01FZ93KY67VYMFTVXTJ5BKWGT7&#39;</span><span class="hl-0">,</span><br/><span class="hl-0">  timestamp: 1640995200000000</span><br/><span class="hl-0">}</span>
+</code></pre>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<ul>
+<li>Commit changes, merge PR&#39;s to <code>main</code> branch</li>
+<li>Bump <code>version</code> field in <code>package.json</code></li>
+<li>Cut a new <a href="https://github.com/truestamp/truestamp-id/releases">release</a></li>
+<li>New release will trigger workflow to build, test, and publish private package to <a href="https://github.com/truestamp/truestamp-id/packages">Github Package Registry</a>.</li>
+</ul>
+
+<a href="#legal" id="legal" style="color: inherit; text-decoration: none;">
+  <h2>Legal</h2>
+</a>
+<p>Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.</p>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-type-alias"><a href="modules.html#IdV1Decode" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IdV1DecodeArgs" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IdV1DecodeUnsafely" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode<wbr/>Unsafely</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IdV1EncodeArgs" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Encode<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IdV1ParseArgs" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Parse<wbr/>Args</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IdV1Parsed" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Parsed</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1DecodeArgsStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode<wbr/>Args<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1DecodeStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1DecodeUnsafelyStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Decode<wbr/>Unsafely<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1EncodeArgsStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Encode<wbr/>Args<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1ParseArgsStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Parse<wbr/>Args<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1ParsedStruct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Parsed<wbr/>Struct</a></li><li class="tsd-kind-variable"><a href="modules.html#IdV1Struct" class="tsd-kind-icon">Id<wbr/>V1<wbr/>Struct</a></li><li class="tsd-kind-function"><a href="modules.html#decode" class="tsd-kind-icon">decode</a></li><li class="tsd-kind-function"><a href="modules.html#decodeUnsafely" class="tsd-kind-icon">decode<wbr/>Unsafely</a></li><li class="tsd-kind-function"><a href="modules.html#encode" class="tsd-kind-icon">encode</a></li><li class="tsd-kind-function"><a href="modules.html#isValid" class="tsd-kind-icon">is<wbr/>Valid</a></li><li class="tsd-kind-function"><a href="modules.html#isValidUnsafely" class="tsd-kind-icon">is<wbr/>Valid<wbr/>Unsafely</a></li></ul></nav></div></div></div><footer class=""><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="assets/main.js"></script></body></html>
