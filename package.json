@@ -1,7 +1,7 @@
 {
   "name": "@truestamp/id",
   "type": "module",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "license": "UNLICENSED",
   "description": "Truestamp Id serialize/deserialize library written in Typescript",
@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/truestamp/truestamp-id/issues"
   },
-  "homepage": "https://truestamp.github.io/truestamp-idy",
+  "homepage": "https://truestamp.github.io/truestamp-id",
   "keywords": [
     "Truestamp",
     "JavaScript",
