@@ -1,19 +1,11 @@
 // Copyright © 2021-2022 Truestamp Inc. All Rights Reserved.
 
 const { ulid } = require('ulidx')
-import {
-  encode,
-  decode,
-  decodeUnsafely,
-  isValid,
-  isValidUnsafely,
-} from '../src/index'
+import { encode, decode, decodeUnsafely, isValid, isValidUnsafely } from '../src/index'
 
 // Samples
-const HMAC_KEY =
-  'deadc44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-const ENVELOPE_HASH =
-  'beefc44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+const HMAC_KEY = 'deadc44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+const ENVELOPE_HASH = 'beefc44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
 
 describe('the encode() function', () => {
   test('can create Id with valid params', async () => {
@@ -25,26 +17,7 @@ describe('the encode() function', () => {
       envelopeHash: ENVELOPE_HASH,
       hmacKey: HMAC_KEY,
     })
-    expect(
-      isValid({ id: t, envelopeHash: ENVELOPE_HASH, hmacKey: HMAC_KEY }),
-    ).toBeTruthy()
-  })
-
-  test('can detect invalid version', async () => {
-    const t = () => {
-      const t = encode({
-        version: 0,
-        test: false,
-        ulid: ulid(),
-        timestamp: 1644772755000000,
-        envelopeHash: ENVELOPE_HASH,
-        hmacKey: HMAC_KEY,
-      })
-    }
-    expect(t).toThrow(Error)
-    expect(t).toThrow(
-      'At path: version -- Expected a integer of `1` but received `0`',
-    )
+    expect(isValid({ id: t, envelopeHash: ENVELOPE_HASH, hmacKey: HMAC_KEY })).toBeTruthy()
   })
 
   test('can detect invalid ULID', async () => {
@@ -59,9 +32,7 @@ describe('the encode() function', () => {
       })
     }
     expect(t).toThrow(Error)
-    expect(t).toThrow(
-      'At path: ulid -- Expected a string matching `/^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/` but received "foo"',
-    )
+    expect(t).toThrow('Invalid Id:  invalid_string : [ulid] : Invalid')
   })
 
   test('can detect invalid timestamp too low', async () => {
@@ -76,9 +47,7 @@ describe('the encode() function', () => {
       })
     }
     expect(t).toThrow(Error)
-    expect(t).toThrow(
-      'At path: timestamp -- Expected a integer greater than or equal to 1640995200000000 but received `1640995199999999`',
-    )
+    expect(t).toThrow('Invalid Id:  too_small : [timestamp] : Number must be greater than or equal to 1640995200000000')
   })
 
   test('can detect invalid envelopeHash', async () => {
@@ -93,12 +62,10 @@ describe('the encode() function', () => {
       })
     }
     expect(t).toThrow(Error)
-    expect(t).toThrow(
-      'At path: envelopeHash -- Expected a string matching `/^(([a-f0-9]{2}){20,64})$/` but received "foo"',
-    )
+    expect(t).toThrow('Invalid Id:  invalid_string : [envelopeHash] : Invalid')
   })
 
-  test('can detect invalid envelopeHash', async () => {
+  test('can detect invalid hmacKey', async () => {
     const t = () => {
       const t = encode({
         version: 1,
@@ -110,16 +77,13 @@ describe('the encode() function', () => {
       })
     }
     expect(t).toThrow(Error)
-    expect(t).toThrow(
-      'At path: hmacKey -- Expected a string matching `/^(([a-f0-9]{2}){32,64})$/` but received "foo"',
-    )
+    expect(t).toThrow('Invalid Id:  invalid_string : [hmacKey] : Invalid')
   })
 })
 
 describe('the decode() function', () => {
   test('can decode simple Id', async () => {
-    const t =
-      'T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638'
+    const t = 'T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638'
 
     const decoded = decode({
       id: t,
@@ -163,8 +127,7 @@ describe('the decode() function', () => {
 
 describe('the decodeUnsafely() function', () => {
   test('can decode simple Id', async () => {
-    const t =
-      'T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638'
+    const t = 'T10_01FZ93KY67VYMFTVXTJ5BKWGT7_1640995200000000_63F9FA40EEC63EC865ABAB31A9ED1638'
 
     const decoded = decodeUnsafely({ id: t })
 
