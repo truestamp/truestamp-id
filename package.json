@@ -1,7 +1,7 @@
 {
   "name": "@truestamp/id",
   "type": "module",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "author": "Truestamp <support@truestamp.com> (https://www.truestamp.com)",
   "license": "UNLICENSED",
   "description": "Truestamp Id serialize/deserialize library written in Typescript",
